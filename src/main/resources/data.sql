@@ -1,3 +1,5 @@
+create sequence if not exists hibernate_sequence start with 1 increment by 1;
+
 DROP TABLE IF EXISTS user;
 
 CREATE TABLE user

@@ -44,6 +44,11 @@ public class UserService implements UserDetailsService {
         userRepository.save(newUser);
     }
 
+    /**
+     * Method to convert UserRegistrationDTO from registration form to user entity.
+     * @param user  - UserRegistrationDTO from registration form.
+     * @return user entity.
+     */
     private User extractUserFromDto(UserRegistrationDTO user) {
         return User.builder()
                 .email(user.getEmail())
