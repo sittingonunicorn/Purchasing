@@ -25,11 +25,16 @@ public class User implements UserDetails {
     @GeneratedValue
     @Column(name = "user_id", nullable = false)
     private Long id;
+
     @Column(name = "password", nullable = false)
     private String password;
+
     @Column(name = "email", nullable = false)
     @Email
     private String email;
+
+    @Column(name = "balance", nullable = false)
+    private Integer balance;
 
 
     @Override

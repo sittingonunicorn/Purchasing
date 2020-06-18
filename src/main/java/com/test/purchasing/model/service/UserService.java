@@ -53,6 +53,7 @@ public class UserService implements UserDetailsService {
         return User.builder()
                 .email(user.getEmail())
                 .password(bcryptPasswordEncoder.encode(user.getPassword()))
+                .balance(0)
                 .build();
     }
 
