@@ -1,0 +1,24 @@
+<!--suppress ALL -->
+<header th:fragment="adminheader" xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div>
+        <div class="nav">
+            <nav>
+                <button type="submit" class="btn btn-outline-info" onclick="location.href='?lang=en_US'"
+                        th:text="#{language.en}"></button>
+                <button type="submit" class="btn btn-outline-info" onclick="location.href='?lang=ua_UA'"
+                        th:text="#{language.ua}"></button>
+                <button type="button" class="btn btn-info" onclick="location.href='/logout'"
+                        th:text="#{button.logout}"></button>
+            </nav>
+        </div>
+
+        <!--        <div class="menu"  sec:authorize="hasAuthority('ADMIN')">-->
+        <!--            <ul class="hr">-->
+        <!--                <li><a href="/admin/archiveappointments" th:text="#{link.comments}"></a></li>-->
+        <!--                <li><a href="/admin/appointments" th:text="#{link.appointments}"></a></li>-->
+        <!--                <li><a href="/user/servicetypes" th:text="#{link.create.new.appointment}"></a></li>-->
+        <!--            </ul>-->
+        <!--        </div>-->
+    </div>
+</header>
