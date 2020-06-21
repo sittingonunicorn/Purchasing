@@ -37,6 +37,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * Method to save new user to database after registration.
+     *
      * @param user - UserRegistrationDTO from registration form.
      */
     public void saveNewUser(UserRegistrationDTO user) {
@@ -46,7 +47,8 @@ public class UserService implements UserDetailsService {
 
     /**
      * Method to convert UserRegistrationDTO from registration form to user entity.
-     * @param user  - UserRegistrationDTO from registration form.
+     *
+     * @param user - UserRegistrationDTO from registration form.
      * @return user entity.
      */
     private User extractUserFromDto(UserRegistrationDTO user) {
@@ -59,6 +61,7 @@ public class UserService implements UserDetailsService {
 
     /**
      * Method for authentication of User. It gets user data from database by password.
+     *
      * @param email - user password.
      * @return UserDetails for Spring Security.
      */
@@ -66,5 +69,10 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(@NonNull String email) {
         Optional<User> optional = userRepository.findByEmail(email);
         return optional.orElseThrow(() -> new UsernameNotFoundException("User with password " + email + " not found"));
+    }
+
+    public void replenishBalance(User user, Integer sum) {
+        user.setBalance(user.getBalance() + sum);
+        userRepository.save(user);
     }
 }

@@ -28,4 +28,9 @@ public class Order {
     @OneToMany(cascade = CascadeType.MERGE)
     @JoinColumn(name = "order_id", nullable = false)
     private List<OrderItem> items;
+
+    public Order(User user, List<OrderItem> items) {
+        this.user = user;
+        this.items = items;
+    }
 }

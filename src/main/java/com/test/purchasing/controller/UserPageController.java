@@ -1,12 +1,14 @@
 package com.test.purchasing.controller;
 
 import com.test.purchasing.model.dto.UserRegistrationDTO;
+import com.test.purchasing.model.entity.User;
 import com.test.purchasing.model.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
@@ -20,13 +22,13 @@ import java.util.Set;
 
 @Slf4j
 @Controller
-public class PageController {
+public class UserPageController {
 
     private final MessageSource messageSource;
     private final UserService userService;
 
     @Autowired
-    public PageController(MessageSource messageSource, UserService userService) {
+    public UserPageController(MessageSource messageSource, UserService userService) {
         this.messageSource = messageSource;
         this.userService = userService;
     }
@@ -51,7 +53,7 @@ public class PageController {
     }
 
     @GetMapping("/create_user")
-    public String registration(Model model) {
+    public String userCreation(Model model) {
         model.addAttribute("userRegistrationDTO", new UserRegistrationDTO());
         return "create_user.html";
     }
@@ -69,6 +71,20 @@ public class PageController {
         }
         return "redirect:/login";
     }
+
+    @GetMapping("/add_money")
+    public String addMoney() {
+
+        return "add_money.html";
+    }
+    @PostMapping("/add_money")
+    public String addMoneyPage(@AuthenticationPrincipal User user, @RequestParam(required = false) Integer sum,
+                               Model model) {
+        userService.replenishBalance(user, sum);
+        model.addAttribute("new_balance", user.getBalance());
+        return "add_money.html";
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="parts/head :: head">
+    <title>Replenish balance</title>
+</head>
+<body>
+<div th:replace="parts/header :: header"></div>
+<div class="info" th:if="${new_balance}">
+    <div class="alert alert-info" role="alert" th:text="${new_balance}">
+        Your balance</div>
+</div>
+<form method="post" th:action="@{/add_money}">
+    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+    <div class="form-group">
+        <label for="sum" class="card-text" th:text="Sum">Sum</label>
+        <input required type="number" class="form-control" id="sum" th:placeholder="Sum"
+               name="sum">
+    </div>
+    <button type="submit" class="btn btn-outline-info" th:text="Submit">Submit</button>
+</form>
+
+<div th:replace="parts/footer :: footer"></div>
+</body>
+</html>

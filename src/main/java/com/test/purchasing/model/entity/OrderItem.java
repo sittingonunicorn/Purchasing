@@ -26,4 +26,9 @@ public class OrderItem {
 
     @Column(name = "amount", nullable = false)
     private Integer amount;
+
+    public OrderItem(Good good, Integer amount) {
+        this.good = good;
+        this.amount = amount;
+    }
 }
