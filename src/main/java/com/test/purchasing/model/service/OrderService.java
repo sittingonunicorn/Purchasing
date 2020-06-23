@@ -1,31 +1,28 @@
 package com.test.purchasing.model.service;
 
-import com.test.purchasing.model.entity.Good;
 import com.test.purchasing.model.entity.Order;
-import com.test.purchasing.model.entity.OrderItem;
 import com.test.purchasing.model.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
+    private final OrderItemService orderItemService;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, OrderItemService orderItemService) {
         this.orderRepository = orderRepository;
+        this.orderItemService = orderItemService;
     }
 
-
-    public void addGoodToOrder(Good good, Order order) {
-        List<OrderItem> items =  order.getItems();
-        if (items.stream().map(OrderItem::getGood).noneMatch(g -> g.equals(good))){
-            items.add(OrderItem.builder().good(good).amount(1).build());
-            order.setItems(items);
-        }
+    @Transactional(rollbackFor = Exception.class)
+    public Long saveOrder(Order order) {
+        Order orderSaved = orderRepository.save(order);
+        order.getItems().forEach(orderItem -> orderItem.setOrder(orderSaved));
+        order.getItems().forEach(orderItemService::save);
+        return orderSaved.getId();
     }
 
-//                    items.stream().filter(i->i.getGood().equals(good)).findAny().ifPresent(orderItem -> orderItem.setAmount(orderItem.getAmount()+amount))
 }

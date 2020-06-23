@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Slf4j
@@ -55,7 +56,7 @@ public class UserService implements UserDetailsService {
         return User.builder()
                 .email(user.getEmail())
                 .password(bcryptPasswordEncoder.encode(user.getPassword()))
-                .balance(0)
+                .balance(new BigDecimal(50))
                 .build();
     }
 
@@ -72,7 +73,15 @@ public class UserService implements UserDetailsService {
     }
 
     public void replenishBalance(User user, Integer sum) {
-        user.setBalance(user.getBalance() + sum);
+        user.setBalance(user.getBalance().add(new BigDecimal(sum)));
+        userRepository.save(user);
+    }
+
+    public void subtractBalance(User user, BigDecimal sum){
+        System.out.println(user.getBalance());
+        System.out.println(sum);
+        user.setBalance(user.getBalance().subtract(sum));
+        System.out.println(user.getBalance());
         userRepository.save(user);
     }
 }

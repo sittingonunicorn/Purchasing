@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Data
 @Builder
@@ -36,4 +37,14 @@ public class Good {
     @JoinColumn(name = "discount_id")
     private Discount discount;
 
+
+    public BigDecimal getDiscountPrice() {
+        if (discount == null) {
+            return price;
+        } else {
+            BigDecimal discountPercent = new BigDecimal(discount.getPercent());
+            BigDecimal hundred = new BigDecimal(100);
+            return price.multiply((hundred.subtract(discountPercent).divide(hundred, 2, RoundingMode.HALF_EVEN)));
+        }
+    }
 }

@@ -39,7 +39,8 @@ public class UserPageController {
     }
 
     @GetMapping("/main")
-    public String mainPage() {
+    public String mainPage(Model model, @AuthenticationPrincipal User user) {
+        model.addAttribute("balance", user.getBalance());
         return "main.html";
     }
 
@@ -73,8 +74,8 @@ public class UserPageController {
     }
 
     @GetMapping("/add_money")
-    public String addMoney() {
-
+    public String addMoney(Model model, @AuthenticationPrincipal User user) {
+        model.addAttribute("balance", user.getBalance());
         return "add_money.html";
     }
     @PostMapping("/add_money")
@@ -82,6 +83,7 @@ public class UserPageController {
                                Model model) {
         userService.replenishBalance(user, sum);
         model.addAttribute("new_balance", user.getBalance());
+        model.addAttribute("balance", user.getBalance());
         return "add_money.html";
     }
 

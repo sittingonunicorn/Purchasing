@@ -1,5 +1,6 @@
 package com.test.purchasing.model.service;
 
+import com.test.purchasing.model.entity.OrderItem;
 import com.test.purchasing.model.repository.OrderItemRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,4 +14,7 @@ public class OrderItemService {
         this.orderItemRepository = orderItemRepository;
     }
 
+    public void save(OrderItem item){
+        orderItemRepository.save(item);
+    }
 }

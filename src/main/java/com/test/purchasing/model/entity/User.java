@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "balance", nullable = false)
-    private Integer balance;
+    private BigDecimal balance;
 
 
     @Override

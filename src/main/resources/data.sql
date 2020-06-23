@@ -5,13 +5,13 @@ CREATE TABLE IF NOT EXISTS user
     user_id  bigint(11)   NOT NULL,
     email    varchar(45)  NOT NULL,
     password varchar(100) NOT NULL,
-    balance  bigint(11)   NOT NULL,
+    balance  DECIMAL(10, 0)   NOT NULL,
     PRIMARY KEY (user_id)
 );
 
 INSERT INTO user (user_id, email, password, balance)
 VALUES (1, 'test@gmail.com', '$2a$10$Q8leaY8sqkudaig/SX4p/eUwVjZeaWDLj6Eq/lcY/HfKnr3CCkauu',
-        100);
+        50);
 
 CREATE TABLE IF NOT EXISTS category
 (
@@ -53,20 +53,24 @@ VALUES (hibernate_sequence.NEXTVAL, 'cup pink', 5, select category_id from categ
         select discount_id from discount where percent = 20),
        (hibernate_sequence.NEXTVAL, 'plate blue small', 10, select category_id from category where name = 'plates',
         select discount_id from discount where percent = 20),
-       (hibernate_sequence.NEXTVAL, 'plate blue large', 15, select category_id from category where name = 'plates', null);
+       (hibernate_sequence.NEXTVAL, 'plate black small', 10, select category_id from category where name = 'plates',
+        select discount_id from discount where percent = 20),
+       (hibernate_sequence.NEXTVAL, 'plate blue large', 15, select category_id from category where name = 'plates',
+        null);
 
 CREATE TABLE IF NOT EXISTS order_item
 (
-    order_item_id bigint(11) NOT NULL,
+    order_item_id bigint(11) default hibernate_sequence.nextval,
     good_id       bigint(11) NOT NULL,
     amount        int(3)     NOT NULL,
-    order_id      bigint(11) NOT NULL,
+    order_id      bigint(11),
+    useDiscount   BOOLEAN    NOT NULL,
     PRIMARY KEY (order_item_id)
 );
 
 CREATE TABLE IF NOT EXISTS orders
 (
-    order_id bigint(11) NOT NULL,
+    order_id bigint(11) default hibernate_sequence.nextval,
     user_id  bigint(11) NOT NULL,
     amount   int(3)     NOT NULL,
     PRIMARY KEY (order_id)
