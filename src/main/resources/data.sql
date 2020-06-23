@@ -2,15 +2,16 @@ create sequence if not exists hibernate_sequence start with 2 increment by 1;
 
 CREATE TABLE IF NOT EXISTS user
 (
-    user_id  bigint(11)   NOT NULL,
-    email    varchar(45)  NOT NULL,
-    password varchar(100) NOT NULL,
-    balance  DECIMAL(10, 0)   NOT NULL,
+    user_id  bigint(11)     NOT NULL,
+    email    varchar(45)    NOT NULL,
+    password varchar(100)   NOT NULL,
+    name     varchar(45)    NOT NULL,
+    balance  DECIMAL(10, 0) NOT NULL,
     PRIMARY KEY (user_id)
 );
 
-INSERT INTO user (user_id, email, password, balance)
-VALUES (1, 'test@gmail.com', '$2a$10$Q8leaY8sqkudaig/SX4p/eUwVjZeaWDLj6Eq/lcY/HfKnr3CCkauu',
+INSERT INTO user (user_id, email, password, name, balance)
+VALUES (1, 'test@gmail.com', '$2a$10$Q8leaY8sqkudaig/SX4p/eUwVjZeaWDLj6Eq/lcY/HfKnr3CCkauu', 'Test',
         50);
 
 CREATE TABLE IF NOT EXISTS category

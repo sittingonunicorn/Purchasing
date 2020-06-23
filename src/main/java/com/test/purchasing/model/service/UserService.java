@@ -56,6 +56,7 @@ public class UserService implements UserDetailsService {
         return User.builder()
                 .email(user.getEmail())
                 .password(bcryptPasswordEncoder.encode(user.getPassword()))
+                .name(user.getName())
                 .balance(new BigDecimal(50))
                 .build();
     }

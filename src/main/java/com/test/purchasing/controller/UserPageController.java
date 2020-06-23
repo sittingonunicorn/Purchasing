@@ -76,14 +76,16 @@ public class UserPageController {
     @GetMapping("/add_money")
     public String addMoney(Model model, @AuthenticationPrincipal User user) {
         model.addAttribute("balance", user.getBalance());
+        model.addAttribute("name", user.getName());
         return "add_money.html";
     }
     @PostMapping("/add_money")
     public String addMoneyPage(@AuthenticationPrincipal User user, @RequestParam(required = false) Integer sum,
                                Model model) {
         userService.replenishBalance(user, sum);
-        model.addAttribute("new_balance", user.getBalance());
+        model.addAttribute("additional", sum);
         model.addAttribute("balance", user.getBalance());
+        model.addAttribute("name", user.getName());
         return "add_money.html";
     }
 

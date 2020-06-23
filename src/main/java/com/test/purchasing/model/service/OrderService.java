@@ -18,11 +18,10 @@ public class OrderService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Long saveOrder(Order order) {
+    public void saveOrder(Order order) {
         Order orderSaved = orderRepository.save(order);
         order.getItems().forEach(orderItem -> orderItem.setOrder(orderSaved));
         order.getItems().forEach(orderItemService::save);
-        return orderSaved.getId();
     }
 
 }

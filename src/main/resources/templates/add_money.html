@@ -6,16 +6,17 @@
 </head>
 <body>
 <div th:replace="parts/header :: header"></div>
-<div class="info" th:if="${new_balance}">
-    <div class="alert alert-info" role="alert" th:text="#{message.replenised.balance(${new_balance})}">
+<div class="info" th:if="${additional}">
+    <div class="alert alert-info" role="alert" th:text="#{message.replenised.balance(${additional})}">
         Your balance</div>
 </div>
+<div th:text="#{message.replenised.balance.user(${name})}"></div>
 <form method="post" th:action="@{/add_money}">
     <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
     <div class="form-group">
         <label for="sum" class="card-text" th:text="Sum">Sum</label>
         <input required type="number" class="form-control" id="sum" th:placeholder="Sum"
-               name="sum">
+               name="sum" style="max-width: 200px">
     </div>
     <button type="submit" class="btn btn-outline-info" th:text="Submit">Submit</button>
 </form>

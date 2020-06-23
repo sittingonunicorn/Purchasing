@@ -28,7 +28,7 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order" ,cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.MERGE)
     private List<OrderItem> items;
 
     public Order(User user, List<OrderItem> items) {
@@ -47,20 +47,30 @@ public class Order {
     }
 
     private void setOptionalDiscount() {
-        if(items.stream().map(item-> item.getGood().getDiscount()).filter(Objects::nonNull).count()>3){
+        if (items.stream().map(item -> item.getGood().getDiscount()).filter(Objects::nonNull).count() > 3) {
             items.sort(Comparator.comparing(OrderItem::getPossibleDiscount).reversed());
             items.stream()
-                    .skip(items.size()-3L).forEach(orderItem -> orderItem.setUseDiscount(false));
+                    .skip(3L).forEach(orderItem -> orderItem.setUseDiscount(false));
             items.stream()
-                    .limit(items.size()-3L).forEach(orderItem -> orderItem.setUseDiscount(true));
+                    .limit(3L).forEach(orderItem -> orderItem.setUseDiscount(true));
         }
     }
 
-    public void addGoodToOrder(Good good, Order order) {
-        List<OrderItem> items =  order.getItems();
-        if (items.stream().map(OrderItem::getGood).noneMatch(g -> g.equals(good))){
+    public void addGoodToOrder(Good good) {
+        if (items.stream().map(OrderItem::getGood).noneMatch(g -> g.equals(good))) {
             items.add(OrderItem.builder().good(good).amount(1).useDiscount(true).build());
-            order.setItems(items);
         }
     }
+
+    public void deleteOrderItem(Good good) {
+        items.stream().filter(orderItem -> orderItem.getGood().equals(good)).findFirst().ifPresent(items::remove);
+    }
+
+    public void changeAmount(Good good, int amount){
+        items.stream()
+                .filter(orderItem -> orderItem.getGood().equals(good))
+                .findFirst()
+                .ifPresent(orderItem -> orderItem.setAmount(amount));
+    }
+
 }

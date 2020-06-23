@@ -50,6 +50,11 @@
                                    th:placeholder="#{password.confirm}"
                                    name="confirmPassword">
                         </div>
+                        <div class="form-group">
+                            <label for="name" class="card-text" th:text="#{name}">Name</label>
+                            <input type="text" class="form-control" id="name" th:placeholder="#{name}"
+                                   name="name">
+                        </div>
                         <button type="submit" class="btn btn-outline-info" th:text="#{register}">Register</button>
                     </form>
                 </div>

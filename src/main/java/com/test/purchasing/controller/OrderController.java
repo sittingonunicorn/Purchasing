@@ -54,7 +54,7 @@ public class OrderController {
     public String addGood(Model model, @RequestParam(value = "goodId") Long goodId,
                           @ModelAttribute("order") Order order)
             throws GoodNotFoundException {
-        order.addGoodToOrder(goodService.findById(goodId), order);
+        order.addGoodToOrder(goodService.findById(goodId));
         model.addAttribute("goods", goodService.findAll());
         model.addAttribute("order_goods", order.getItems().stream()
                 .map(OrderItem::getGood).collect(Collectors.toList()));
@@ -70,17 +70,22 @@ public class OrderController {
     }
 
     @PostMapping("/pay/{goodId}")
-    public String amountChange(Model model, @ModelAttribute("order") Order order,
+    public String changeAmount(Model model, @ModelAttribute("order") Order order,
                                @PathVariable String goodId, @RequestParam(value = "amount") Integer amount)
             throws GoodNotFoundException {
         model.addAttribute("balance", order.getUser().getBalance());
         Good good = goodService.findById(Long.parseLong(goodId));
-        order.getItems().stream()
-                .filter(orderItem -> orderItem.getGood().equals(good))
-                .findFirst()
-                .ifPresent(orderItem -> orderItem.setAmount(amount));
+        order.changeAmount(good, amount);
         model.addAttribute("sum", order.getSum());
         return "pay.html";
+    }
+
+    @PostMapping("/delete/{goodId}")
+    public String deleteGood(@ModelAttribute("order") Order order,
+                             @PathVariable String goodId)
+            throws GoodNotFoundException {
+        order.deleteOrderItem(goodService.findById(Long.parseLong(goodId)));
+        return "redirect:/pay";
     }
 
     @PostMapping("/paid")
@@ -92,7 +97,7 @@ public class OrderController {
         if (balance.compareTo(sum) < 0) {
             throw new NotEnoughMoneyException(balance, sum);
         }
-        model.addAttribute("orderId", orderService.saveOrder(order));
+        orderService.saveOrder(order);
         userService.subtractBalance(order.getUser(), sum);
         balance = order.getUser().getBalance();
         sessionStatus.setComplete();

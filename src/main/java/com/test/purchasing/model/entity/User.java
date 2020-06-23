@@ -34,6 +34,9 @@ public class User implements UserDetails {
     @Email
     private String email;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
