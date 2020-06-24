@@ -16,7 +16,7 @@
                         th:text="#{button.good.list}"></button>
                 <button type="button" class="btn btn-info" onclick="location.href='/pay'"
                         th:text="#{button.cart}"></button>
-                <span th:text="#{message.balance(${balance})}"></span>
+                <span th:text="#{message.balance(${#numbers.formatDecimal(balance, 0, 'COMMA', 2, 'POINT')})}"></span>
             </nav>
 
         </div>

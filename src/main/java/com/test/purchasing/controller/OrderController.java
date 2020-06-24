@@ -43,7 +43,7 @@ public class OrderController {
 
     @GetMapping("/list")
     public String getListPage(Model model, @ModelAttribute("order") Order order) {
-        model.addAttribute("balance", order.getUser().getBalance());
+        model.addAttribute("balance", order.getUser().getLocalizedBalance());
         model.addAttribute("goods", goodService.findAll());
         model.addAttribute("order_goods", order.getItems().stream()
                 .map(OrderItem::getGood).collect(Collectors.toList()));
@@ -58,13 +58,13 @@ public class OrderController {
         model.addAttribute("goods", goodService.findAll());
         model.addAttribute("order_goods", order.getItems().stream()
                 .map(OrderItem::getGood).collect(Collectors.toList()));
-        model.addAttribute("balance", order.getUser().getBalance());
+        model.addAttribute("balance", order.getUser().getLocalizedBalance());
         return "list.html";
     }
 
     @GetMapping("/pay")
     public String payPage(Model model, @ModelAttribute("order") Order order) {
-        model.addAttribute("balance", order.getUser().getBalance());
+        model.addAttribute("balance", order.getUser().getLocalizedBalance());
         model.addAttribute("sum", order.getSum());
         return "pay.html";
     }
@@ -73,7 +73,7 @@ public class OrderController {
     public String changeAmount(Model model, @ModelAttribute("order") Order order,
                                @PathVariable String goodId, @RequestParam(value = "amount") Integer amount)
             throws GoodNotFoundException {
-        model.addAttribute("balance", order.getUser().getBalance());
+        model.addAttribute("balance", order.getUser().getLocalizedBalance());
         Good good = goodService.findById(Long.parseLong(goodId));
         order.changeAmount(good, amount);
         model.addAttribute("sum", order.getSum());
@@ -92,14 +92,14 @@ public class OrderController {
     @Transactional(rollbackFor = Exception.class)
     public String orderPayment(Model model, @ModelAttribute("order") Order order,
                                SessionStatus sessionStatus) throws NotEnoughMoneyException {
-        BigDecimal balance = order.getUser().getBalance();
+        BigDecimal balance = order.getUser().getLocalizedBalance();
         BigDecimal sum = order.getSum();
         if (balance.compareTo(sum) < 0) {
             throw new NotEnoughMoneyException(balance, sum);
         }
         orderService.saveOrder(order);
         userService.subtractBalance(order.getUser(), sum);
-        balance = order.getUser().getBalance();
+        balance = order.getUser().getLocalizedBalance();
         sessionStatus.setComplete();
         model.addAttribute("balance", balance);
         return "success.html";

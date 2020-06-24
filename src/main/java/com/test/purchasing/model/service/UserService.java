@@ -74,15 +74,12 @@ public class UserService implements UserDetailsService {
     }
 
     public void replenishBalance(User user, Integer sum) {
-        user.setBalance(user.getBalance().add(new BigDecimal(sum)));
+        user.setLocalizedBalance(user.getLocalizedBalance().add(new BigDecimal(sum)));
         userRepository.save(user);
     }
 
     public void subtractBalance(User user, BigDecimal sum){
-        System.out.println(user.getBalance());
-        System.out.println(sum);
-        user.setBalance(user.getBalance().subtract(sum));
-        System.out.println(user.getBalance());
+        user.setLocalizedBalance(user.getLocalizedBalance().subtract(sum));
         userRepository.save(user);
     }
 }

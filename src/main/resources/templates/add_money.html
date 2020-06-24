@@ -14,11 +14,11 @@
 <form method="post" th:action="@{/add_money}">
     <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
     <div class="form-group">
-        <label for="sum" class="card-text" th:text="Sum">Sum</label>
-        <input required type="number" class="form-control" id="sum" th:placeholder="Sum"
+        <label for="sum" class="card-text" th:text="#{message.input.sum}">Sum</label>
+        <input required type="number" min="1" class="form-control" id="sum" th:placeholder="#{message.input.sum}"
                name="sum" style="max-width: 200px">
     </div>
-    <button type="submit" class="btn btn-outline-info" th:text="Submit">Submit</button>
+    <button type="submit" class="btn btn-outline-info" th:text="#{button.submit}">Submit</button>
 </form>
 
 <div th:replace="parts/footer :: footer"></div>

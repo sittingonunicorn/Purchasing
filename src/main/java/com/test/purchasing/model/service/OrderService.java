@@ -22,6 +22,7 @@ public class OrderService {
         Order orderSaved = orderRepository.save(order);
         order.getItems().forEach(orderItem -> orderItem.setOrder(orderSaved));
         order.getItems().forEach(orderItemService::save);
+        log.info("Order " + order.getId() + " is successfully saved");
     }
 
 }

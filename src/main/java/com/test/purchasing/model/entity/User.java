@@ -4,14 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @Data
@@ -77,4 +80,15 @@ public class User implements UserDetails {
         return this.email;
     }
 
+    public BigDecimal getLocalizedBalance() {
+        Locale locale = LocaleContextHolder.getLocale();
+        return locale.equals(Locale.US) ? balance : balance.multiply(BigDecimal.valueOf(26.7));
+    }
+
+    public void setLocalizedBalance(BigDecimal balance) {
+        Locale locale = LocaleContextHolder.getLocale();
+        balance = locale.equals(Locale.US) ? balance :
+                balance.divide(BigDecimal.valueOf(26.7), 10, RoundingMode.HALF_EVEN );
+        this.setBalance(balance);
+    }
 }

@@ -42,20 +42,20 @@ public class OrderItem {
     }
 
     public BigDecimal getCost(){
-        return good.getPrice().multiply(new BigDecimal(amount));
+        return good.getPrice().multiply(BigDecimal.valueOf(amount));
     }
 
     public BigDecimal getDiscountCost(){
-        return useDiscount? good.getDiscountPrice().multiply(new BigDecimal(amount)) : getCost();
+        return useDiscount? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount)) : getCost();
     }
 
     public BigDecimal getDiscount(){
         return useDiscount? good.getPrice().subtract(good.getDiscountPrice())
-                .multiply(new BigDecimal(amount)) : new BigDecimal(0);
+                .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
     }
 
     public BigDecimal getPossibleDiscount() {
         return good.getDiscount()!=null ? good.getPrice().subtract(good.getDiscountPrice())
-                .multiply(new BigDecimal(amount)) : new BigDecimal(0);
+                .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
     }
 }

@@ -40,7 +40,7 @@ public class UserPageController {
 
     @GetMapping("/main")
     public String mainPage(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("balance", user.getBalance());
+        model.addAttribute("balance", user.getLocalizedBalance());
         return "main.html";
     }
 
@@ -75,16 +75,16 @@ public class UserPageController {
 
     @GetMapping("/add_money")
     public String addMoney(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("balance", user.getBalance());
+        model.addAttribute("balance", user.getLocalizedBalance());
         model.addAttribute("name", user.getName());
         return "add_money.html";
     }
     @PostMapping("/add_money")
-    public String addMoneyPage(@AuthenticationPrincipal User user, @RequestParam(required = false) Integer sum,
+    public String addMoneyPage(@AuthenticationPrincipal User user, @RequestParam Integer sum,
                                Model model) {
         userService.replenishBalance(user, sum);
         model.addAttribute("additional", sum);
-        model.addAttribute("balance", user.getBalance());
+        model.addAttribute("balance", user.getLocalizedBalance());
         model.addAttribute("name", user.getName());
         return "add_money.html";
     }
