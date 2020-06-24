@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Data
@@ -37,13 +39,14 @@ public class Order {
     }
 
     public BigDecimal getSum() {
+        Locale locale = LocaleContextHolder.getLocale();
         BigDecimal sum = new BigDecimal(0);
         setOptionalDiscount();
         for (OrderItem item : items
         ) {
             sum = sum.add(item.getDiscountCost());
         }
-        return sum;
+        return locale.equals(Locale.US) ? sum : sum.multiply(BigDecimal.valueOf(26.7));
     }
 
     private void setOptionalDiscount() {

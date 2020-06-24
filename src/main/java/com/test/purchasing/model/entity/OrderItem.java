@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Locale;
 
 @Data
 @Builder
@@ -41,6 +43,19 @@ public class OrderItem {
         useDiscount = true;
     }
 
+    public BigDecimal getLocalizedCost() {
+        Locale locale = LocaleContextHolder.getLocale();
+        BigDecimal itemPrice = good.getPrice().multiply(BigDecimal.valueOf(amount));
+        return locale.equals(Locale.US) ? itemPrice : itemPrice.multiply(BigDecimal.valueOf(26.7));
+    }
+
+    public BigDecimal getLocalizedDiscountCost() {
+        Locale locale = LocaleContextHolder.getLocale();
+        BigDecimal discountPrice =  useDiscount ? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount))
+                : getCost();
+        return locale.equals(Locale.US) ? discountPrice : discountPrice.multiply(BigDecimal.valueOf(26.7));
+    }
+
     public BigDecimal getCost(){
         return good.getPrice().multiply(BigDecimal.valueOf(amount));
     }
@@ -49,13 +64,13 @@ public class OrderItem {
         return useDiscount? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount)) : getCost();
     }
 
-    public BigDecimal getDiscount(){
-        return useDiscount? good.getPrice().subtract(good.getDiscountPrice())
+    public BigDecimal getDiscount() {
+        return useDiscount ? good.getPrice().subtract(good.getDiscountPrice())
                 .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
     }
 
     public BigDecimal getPossibleDiscount() {
-        return good.getDiscount()!=null ? good.getPrice().subtract(good.getDiscountPrice())
+        return good.getDiscount() != null ? good.getPrice().subtract(good.getDiscountPrice())
                 .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
     }
 }

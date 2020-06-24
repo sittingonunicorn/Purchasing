@@ -23,7 +23,7 @@
     <tr th:each="good : ${goods}">
         <td><span th:text="${good.category.name}"> Price </span></td>
         <td><span th:text="${good.name}"> Price </span></td>
-        <td><span th:text="${good.price}"> Price </span></td>
+        <td><span th:text="${good.localizedPrice}"> Price </span></td>
         <td><span th:if="${good.discount ne null}" th:text="${good.discount.percent}"> Price </span></td>
         <td>
             <form method="post" th:action="@{list}" th:if="${!#lists.contains(order_goods, good)}">
