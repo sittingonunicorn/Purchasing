@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+/**
+ * Class uses repository for connection with database to deal with user entity and BCrypt encoder for user password.
+ *
+ * @author Lina Chentsova
+ */
 @Slf4j
 @Service
 public class UserService implements UserDetailsService {
@@ -73,13 +78,24 @@ public class UserService implements UserDetailsService {
         return optional.orElseThrow(() -> new UsernameNotFoundException("User with password " + email + " not found"));
     }
 
+    /**
+     * Method for user balance replenishing.
+     * @param user  - the one to replenish balance.
+     * @param sum - sum to add to user balance.
+     */
     public void replenishBalance(User user, Integer sum) {
         user.setLocalizedBalance(user.getLocalizedBalance().add(new BigDecimal(sum)));
         userRepository.save(user);
     }
 
-    public void subtractBalance(User user, BigDecimal sum){
-        user.setLocalizedBalance(user.getLocalizedBalance().subtract(sum));
+
+    /**
+     * Method to subtract order sum from user balance.
+     * @param user - the one that pays for order.
+     * @param orderSum - sum of order to pay for.
+     */
+    public void subtractBalance(User user, BigDecimal orderSum){
+        user.setLocalizedBalance(user.getLocalizedBalance().subtract(orderSum));
         userRepository.save(user);
     }
 }

@@ -1,7 +1,7 @@
 package com.test.purchasing.controller;
 
+import com.test.purchasing.model.dto.CreateOrderDTO;
 import com.test.purchasing.model.entity.Good;
-import com.test.purchasing.model.entity.Order;
 import com.test.purchasing.model.entity.OrderItem;
 import com.test.purchasing.model.entity.User;
 import com.test.purchasing.model.exception.GoodNotFoundException;
@@ -37,12 +37,12 @@ public class OrderController {
     }
 
     @ModelAttribute("order")
-    private Order createOrder(@AuthenticationPrincipal User user) {
-        return new Order(user, new ArrayList<>());
+    private CreateOrderDTO createOrder(@AuthenticationPrincipal User user) {
+        return new CreateOrderDTO(user, new ArrayList<>());
     }
 
     @GetMapping("/list")
-    public String getListPage(Model model, @ModelAttribute("order") Order order) {
+    public String getListPage(Model model, @ModelAttribute("order") CreateOrderDTO order) {
         model.addAttribute("balance", order.getUser().getLocalizedBalance());
         model.addAttribute("goods", goodService.findAll());
         model.addAttribute("order_goods", order.getItems().stream()
@@ -52,7 +52,7 @@ public class OrderController {
 
     @PostMapping("/list")
     public String addGood(Model model, @RequestParam(value = "goodId") Long goodId,
-                          @ModelAttribute("order") Order order)
+                          @ModelAttribute("order") CreateOrderDTO order)
             throws GoodNotFoundException {
         order.addGoodToOrder(goodService.findById(goodId));
         model.addAttribute("goods", goodService.findAll());
@@ -63,25 +63,25 @@ public class OrderController {
     }
 
     @GetMapping("/pay")
-    public String payPage(Model model, @ModelAttribute("order") Order order) {
+    public String payPage(Model model, @ModelAttribute("order") CreateOrderDTO order) {
         model.addAttribute("balance", order.getUser().getLocalizedBalance());
         model.addAttribute("sum", order.getSum());
         return "pay.html";
     }
 
     @PostMapping("/pay/{goodId}")
-    public String changeAmount(Model model, @ModelAttribute("order") Order order,
-                               @PathVariable String goodId, @RequestParam(value = "amount") Integer amount)
+    public String changeAmount(Model model, @ModelAttribute("order") CreateOrderDTO order,
+                               @PathVariable String goodId, @RequestParam(value = "amount") String amount)
             throws GoodNotFoundException {
         model.addAttribute("balance", order.getUser().getLocalizedBalance());
         Good good = goodService.findById(Long.parseLong(goodId));
-        order.changeAmount(good, amount);
+        order.changeAmount(good, Integer.parseInt(amount));
         model.addAttribute("sum", order.getSum());
         return "pay.html";
     }
 
     @PostMapping("/delete/{goodId}")
-    public String deleteGood(@ModelAttribute("order") Order order,
+    public String deleteGood(@ModelAttribute("order") CreateOrderDTO order,
                              @PathVariable String goodId)
             throws GoodNotFoundException {
         order.deleteOrderItem(goodService.findById(Long.parseLong(goodId)));
@@ -90,7 +90,7 @@ public class OrderController {
 
     @PostMapping("/paid")
     @Transactional(rollbackFor = Exception.class)
-    public String orderPayment(Model model, @ModelAttribute("order") Order order,
+    public String orderPayment(Model model, @ModelAttribute("order") CreateOrderDTO order,
                                SessionStatus sessionStatus) throws NotEnoughMoneyException {
         BigDecimal balance = order.getUser().getLocalizedBalance();
         BigDecimal sum = order.getSum();

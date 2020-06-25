@@ -9,65 +9,69 @@
 <div class="alert" th:if="${param.error}">
     <div class="alert alert-danger" role="alert" th:text="#{message.not.enough.money}">Not enough money!</div>
 </div>
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th th:text="#{var.good.name}"> Name</th>
-        <th th:text="#{var.price}"> Price</th>
-        <th th:text="#{var.amount}"> Amount</th>
-        <th th:text="#{var.discount}"> Discount</th>
-        <th th:text="#{var.discount.implemented}">Discount implemented</th>
-        <th th:text="#{var.cost}"> Cost</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${order.items}">
-        <td><span th:text="${item.good.name}"> Name </span></td>
-        <td><span th:text="${item.good.localizedPrice}"> Price </span></td>
-        <td>
-            <form method="post" th:action="@{'/pay/' + ${item.good.getId()}}" style="float: left">
-                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                <div class="form-group">
-                    <label for="amount"></label>
-                    <input required type="number" min="1" class="form-control" id="amount" th:placeholder="${item.amount}"
-                           name="amount" style="max-width: 100px; float: left;">
-                    <button type="submit" class="btn btn-outline-info" th:text="#{button.submit}">Submit</button>
-                </div>
-            </form>
-            <form method="post" th:action="@{'/delete/' + ${item.good.getId()}}">
-                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                <div class="form-group">
-                    <button type="submit" class="btn btn-outline-info" th:text="#{button.delete}">Delete</button>
-                </div>
-            </form>
-        </td>
-        <td><span th:if="${item.good.discount ne null}" th:text="${item.good.discount.percent}+'%'"> Discount </span>
-        </td>
-        <td><span th:text="#{|bool.${item.useDiscount}|}">Discount implemented</span></td>
-        <td><span th:if="${item.useDiscount}"
-                  th:text="${#numbers.formatDecimal(item.getLocalizedDiscountCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
-            <span th:if="${!item.useDiscount}"
-                  th:text="${#numbers.formatDecimal(item.getLocalizedCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td><span th:text="${#numbers.formatDecimal(sum, 0, 'COMMA', 2, 'POINT')}"> Sum </span></td>
-    </tr>
-    </tbody>
-</table>
+<div style="margin-bottom: 80px">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th th:text="#{var.good.name}"> Name</th>
+            <th th:text="#{var.price}"> Price</th>
+            <th th:text="#{var.amount}"> Amount</th>
+            <th th:text="#{var.discount}"> Discount</th>
+            <th th:text="#{var.discount.implemented}">Discount implemented</th>
+            <th th:text="#{var.cost}"> Cost</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${order.items}">
+            <td><span th:text="${item.good.name}"> Name </span></td>
+            <td><span th:text="${item.good.localizedPrice}"> Price </span></td>
+            <td>
+                <form method="post" th:action="@{'/pay/' + ${item.good.getId()}}" style="float: left">
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                    <div class="form-group">
+                        <label for="amount"></label>
+                        <input required type="number" min="1" class="form-control" id="amount"
+                               th:placeholder="${item.amount}"
+                               name="amount" style="max-width: 100px; float: left;">
+                        <button type="submit" class="btn btn-outline-info" th:text="#{button.submit}">Submit</button>
+                    </div>
+                </form>
+                <form method="post" th:action="@{'/delete/' + ${item.good.getId()}}">
+                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-outline-info" th:text="#{button.delete}">Delete</button>
+                    </div>
+                </form>
+            </td>
+            <td><span th:if="${item.good.discount ne null}"
+                      th:text="${item.good.discount.percent}+'%'"> Discount </span>
+            </td>
+            <td><span th:text="#{|bool.${item.useDiscount}|}">Discount implemented</span></td>
+            <td><span th:if="${item.useDiscount}"
+                      th:text="${#numbers.formatDecimal(item.getLocalizedDiscountCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
+                <span th:if="${!item.useDiscount}"
+                      th:text="${#numbers.formatDecimal(item.getLocalizedCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><span th:text="${#numbers.formatDecimal(sum, 0, 'COMMA', 2, 'POINT')}"> Sum </span></td>
+        </tr>
+        </tbody>
+    </table>
 
-<form method="post" action="/paid">
-    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-    <button type="submit" class="btn btn-info" style="position: absolute; right: 100px;" th:text="#{button.pay}">
-    </button>
-</form>
-<br><br>
-<span>*при покупке товаров, если товаров со скидками больше чем  3, то  в расчете суммы используются тольке те 3 скидки которые наиболее выгодны покупателю.</span>
+    <form method="post" action="/paid">
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+        <button type="submit" class="btn btn-info" style="position: absolute; right: 100px;" th:text="#{button.pay}">
+        </button>
+    </form>
+    <br><br>
+    <span>*при покупке товаров, если товаров со скидками больше чем  3, то  в расчете суммы используются тольке те 3 скидки которые наиболее выгодны покупателю.</span>
+</div>
 <div th:replace="parts/footer :: footer"></div>
 </body>
 </html>

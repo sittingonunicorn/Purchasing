@@ -6,7 +6,7 @@
 <h4>Требования для запуска проекта:</h4>
 JDK 1.8<br>
 Apache Maven<br>
-MySQL<br>
+H2 DB<br>
 <br>
 
 <h4>Установка</h4>

@@ -56,7 +56,7 @@ public class OrderItem {
         return locale.equals(Locale.US) ? discountPrice : discountPrice.multiply(BigDecimal.valueOf(26.7));
     }
 
-    public BigDecimal getCost(){
+    private BigDecimal getCost(){
         return good.getPrice().multiply(BigDecimal.valueOf(amount));
     }
 
