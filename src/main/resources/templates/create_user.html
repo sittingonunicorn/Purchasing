@@ -31,7 +31,6 @@
                         <div class="alert alert-danger" role="alert" th:text="${error}"></div>
                     </div>
                     <form method="post" th:action="@{/create_user}" th:object="${userRegistrationDTO}">
-                        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
                         <div class="form-group">
                             <label for="e-mail" class="card-text" th:text="Email">E-mail</label>
                             <input required type="email" class="form-control" id="e-mail" th:placeholder="Email"

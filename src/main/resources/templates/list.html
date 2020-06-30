@@ -5,40 +5,46 @@
     <title>Goods list page</title>
 </head>
 <body>
-<div th:replace="parts/header :: header"></div>
-<div class="alert" th:if="${param.error}">
-    <div class="alert alert-danger" role="alert" th:text="#{message.good.not.found}">Not enough money!</div>
+<div id="app">
+    <div th:replace="parts/header :: header"></div>
+    <div class="alert" th:if="${param.error}">
+        <div class="alert alert-danger" role="alert" th:text="#{message.good.not.found}">Not enough money!</div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th th:text="#{var.category}"> Category</th>
+            <th th:text="#{var.good.name}"> Name</th>
+            <th th:text="#{var.price}"> Price</th>
+            <th th:text="#{var.discount}"> Discount</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="good in goods">
+            <td><span v-text="good.category.name"> Category </span></td>
+            <td><span v-text="good.name"> Name </span></td>
+            <td><span v-text="good.localizedPrice"> Price </span></td>
+            <td><span v-if="good.discount !== null" v-text="good.discount.percent"> Discount </span></td>
+            <td>
+                <div v-if="orderGoods.indexOf(good) == -1">
+                    <button class="btn btn-outline-info"
+                            v-on:click="addGood(good)" th:text="#{button.add}">Add
+                    </button>
+                </div>
+                <div v-if="orderGoods.indexOf(good) >= 0">
+                    <button class="btn btn-outline-info"
+                            th:text="#{button.added}">Added
+                    </button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:replace="parts/footer :: footer"></div>
 </div>
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th th:text="#{var.category}"> Name</th>
-        <th th:text="#{var.good.name}"> Price</th>
-        <th th:text="#{var.price}"> Price</th>
-        <th th:text="#{var.discount}"> Price</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="good : ${goods}">
-        <td><span th:text="${good.category.name}"> Price </span></td>
-        <td><span th:text="${good.name}"> Price </span></td>
-        <td><span th:text="${good.localizedPrice}"> Price </span></td>
-        <td><span th:if="${good.discount ne null}" th:text="${good.discount.percent}"> Price </span></td>
-        <td>
-            <form method="post" th:action="@{list}" th:if="${!#lists.contains(order_goods, good)}">
-                <input type="hidden" th:value="${good.id}" th:name="goodId">
-                <button type="submit" class="btn btn-outline-info"
-                        th:text="#{button.add}">Add
-                </button>
-            </form>
-            <button type="submit" class="btn btn-outline-info" disabled th:if="${#lists.contains(order_goods, good)}"
-                    th:text="#{button.added}">Added
-            </button>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<div th:replace="parts/footer :: footer"></div>
+<script type="text/javascript" src="js/order.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
 </html>

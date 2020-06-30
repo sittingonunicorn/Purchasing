@@ -5,22 +5,22 @@
     <title>Replenish balance</title>
 </head>
 <body>
-<div th:replace="parts/header :: header"></div>
-<div class="info" th:if="${additional}">
-    <div class="alert alert-info" role="alert" th:text="#{message.replenised.balance(${additional})}">
-        Your balance</div>
-</div>
-<div th:text="#{message.replenised.balance.user(${name})}"></div>
-<form method="post" th:action="@{/add_money}">
-    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-    <div class="form-group">
-        <label for="sum" class="card-text" th:text="#{message.input.sum}">Sum</label>
-        <input required type="number" min="1" class="form-control" id="sum" th:placeholder="#{message.input.sum}"
-               name="sum" style="max-width: 200px">
+<div id="app">
+    <div th:replace="parts/header :: header"></div>
+    <div class="info" th:if="${additional}">
+        <div class="alert alert-info" role="alert" th:text="#{message.replenised.balance(${additional})}">
+            Your balance
+        </div>
     </div>
-    <button type="submit" class="btn btn-outline-info" th:text="#{button.submit}">Submit</button>
-</form>
-
-<div th:replace="parts/footer :: footer"></div>
+    <div th:text="#{message.replenised.balance.user(${name})}"></div>
+    <span v-text="sum"></span>
+    <input type="number" min="1" class="form-control" v-model="sum" th:placeholder="#{message.input.sum}"/>
+    <button type=submit v-on:click="replenishBalance()" class="btn btn-outline-info"
+            th:text="#{button.submit}"></button>
+    <div th:replace="parts/footer :: footer"></div>
+</div>
+<script type="text/javascript" src="js/add_money.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
 </html>

@@ -44,4 +44,17 @@ public class MvcConfig implements WebMvcConfigurer {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
+
+//    @Override
+//    public void addViewControllers(ViewControllerRegistry registry) {
+//        registry.addViewController("/").setViewName("index");
+//        registry.addViewController("/main").setViewName("main");
+//        registry.addViewController("/login").setViewName("login");
+//        registry.addViewController("/create_user").setViewName("create_user");
+//        registry.addViewController("/add_money").setViewName("add_money");
+//        registry.addViewController("/list").setViewName("list.html");
+//        registry.addViewController("/pay").setViewName("pay");
+//        registry.addViewController("/delete").setViewName("pay");
+//        registry.addViewController("/paid").setViewName("success");
+//    }
 }

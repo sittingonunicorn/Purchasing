@@ -64,7 +64,7 @@ public class OrderItem {
         return useDiscount? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount)) : getCost();
     }
 
-    public BigDecimal getDiscount() {
+    public BigDecimal getDiscountValue() {
         return useDiscount ? good.getPrice().subtract(good.getDiscountPrice())
                 .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
     }

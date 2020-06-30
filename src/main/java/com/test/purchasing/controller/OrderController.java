@@ -11,7 +11,6 @@ import com.test.purchasing.model.service.OrderService;
 import com.test.purchasing.model.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +18,11 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Controller
+@RestController
 @SessionAttributes({"order"})
 public class OrderController {
 
@@ -41,57 +41,50 @@ public class OrderController {
         return new CreateOrderDTO(user, new ArrayList<>());
     }
 
-    @GetMapping("/list")
-    public String getListPage(Model model, @ModelAttribute("order") CreateOrderDTO order) {
-        model.addAttribute("balance", order.getUser().getLocalizedBalance());
-        model.addAttribute("goods", goodService.findAll());
-        model.addAttribute("order_goods", order.getItems().stream()
-                .map(OrderItem::getGood).collect(Collectors.toList()));
-        return "list.html";
+    @GetMapping("/goods")
+    public List<Good> getGoodsList() {
+        return goodService.findAll();
     }
 
-    @PostMapping("/list")
-    public String addGood(Model model, @RequestParam(value = "goodId") Long goodId,
-                          @ModelAttribute("order") CreateOrderDTO order)
-            throws GoodNotFoundException {
-        order.addGoodToOrder(goodService.findById(goodId));
-        model.addAttribute("goods", goodService.findAll());
-        model.addAttribute("order_goods", order.getItems().stream()
-                .map(OrderItem::getGood).collect(Collectors.toList()));
-        model.addAttribute("balance", order.getUser().getLocalizedBalance());
-        return "list.html";
+    @GetMapping("/order_goods")
+    public List<Good> getOrderGoodsList(@ModelAttribute("order") CreateOrderDTO order) {
+        return order.getItems().stream()
+                .map(OrderItem::getGood).collect(Collectors.toList());
     }
 
-    @GetMapping("/pay")
-    public String payPage(Model model, @ModelAttribute("order") CreateOrderDTO order) {
-        model.addAttribute("balance", order.getUser().getLocalizedBalance());
-        model.addAttribute("sum", order.getSum());
-        return "pay.html";
+    @PostMapping("/list/add")
+    public void addGood(@RequestBody Good good, Model model) {
+        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        order.addGoodToOrder(good);
+        log.info("Good with id: " + good.getId() + " is added to order");
     }
 
-    @PostMapping("/pay/{goodId}")
-    public String changeAmount(Model model, @ModelAttribute("order") CreateOrderDTO order,
-                               @PathVariable String goodId, @RequestParam(value = "amount") String amount)
-            throws GoodNotFoundException {
-        model.addAttribute("balance", order.getUser().getLocalizedBalance());
-        Good good = goodService.findById(Long.parseLong(goodId));
-        order.changeAmount(good, Integer.parseInt(amount));
-        model.addAttribute("sum", order.getSum());
-        return "pay.html";
+    @GetMapping("/items_list")
+    public List<OrderItem> getItemsList(@ModelAttribute("order") CreateOrderDTO order) {
+        return order.getItems();
     }
 
-    @PostMapping("/delete/{goodId}")
-    public String deleteGood(@ModelAttribute("order") CreateOrderDTO order,
-                             @PathVariable String goodId)
-            throws GoodNotFoundException {
-        order.deleteOrderItem(goodService.findById(Long.parseLong(goodId)));
-        return "redirect:/pay";
+    @GetMapping("/sum")
+    public BigDecimal getSum(@ModelAttribute("order") CreateOrderDTO order) {
+        return order.getSum();
+    }
+
+    @PostMapping("/amount/{amount}")
+    public void setAmount(@RequestBody Good good, @PathVariable Integer amount, Model model) {
+        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        order.changeAmount(good, amount);
+    }
+
+    @PostMapping("/delete_item")
+    public void deleteGood(@RequestBody Good good, Model model) {
+        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        order.deleteOrderItem(good);
     }
 
     @PostMapping("/paid")
     @Transactional(rollbackFor = Exception.class)
-    public String orderPayment(Model model, @ModelAttribute("order") CreateOrderDTO order,
-                               SessionStatus sessionStatus) throws NotEnoughMoneyException {
+    public void orderPayment(Model model, SessionStatus sessionStatus) throws NotEnoughMoneyException {
+        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
         BigDecimal balance = order.getUser().getLocalizedBalance();
         BigDecimal sum = order.getSum();
         if (balance.compareTo(sum) < 0) {
@@ -99,10 +92,7 @@ public class OrderController {
         }
         orderService.saveOrder(order);
         userService.subtractBalance(order.getUser(), sum);
-        balance = order.getUser().getLocalizedBalance();
         sessionStatus.setComplete();
-        model.addAttribute("balance", balance);
-        return "success.html";
     }
 
     @ExceptionHandler(NotEnoughMoneyException.class)

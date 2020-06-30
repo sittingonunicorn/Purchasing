@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -73,22 +74,17 @@ public class UserPageController {
         return "redirect:/login";
     }
 
-    @GetMapping("/add_money")
-    public String addMoney(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("balance", user.getLocalizedBalance());
-        model.addAttribute("name", user.getName());
-        return "add_money.html";
-    }
-    @PostMapping("/add_money")
-    public String addMoneyPage(@AuthenticationPrincipal User user, @RequestParam Integer sum,
-                               Model model) {
-        userService.replenishBalance(user, sum);
-        model.addAttribute("additional", sum);
-        model.addAttribute("balance", user.getLocalizedBalance());
-        model.addAttribute("name", user.getName());
-        return "add_money.html";
+    @PostMapping("/replenish_balance")
+    @ResponseBody
+    public void replenishBalance(@RequestBody String sum, @AuthenticationPrincipal User user) {
+        userService.replenishBalance(user, Integer.parseInt(sum.substring(0, sum.indexOf('='))));
     }
 
+    @GetMapping("/balance")
+    public @ResponseBody
+    BigDecimal getBalance(@AuthenticationPrincipal User user) {
+        return user.getLocalizedBalance();
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)

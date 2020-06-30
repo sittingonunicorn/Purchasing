@@ -31,7 +31,6 @@
                         <div class="alert alert-danger" role="alert">Invalid E-mail or Password!</div>
                     </div>
                     <form method="post">
-                        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
                         <div class="form-group">
                             <label for="e-mail">E-mail</label>
                             <input required type="email" class="form-control" id="e-mail" th:placeholder="e-mail"

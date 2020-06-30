@@ -5,73 +5,61 @@
     <title>Payment page</title>
 </head>
 <body>
-<div th:replace="parts/header :: header"></div>
-<div class="alert" th:if="${param.error}">
-    <div class="alert alert-danger" role="alert" th:text="#{message.not.enough.money}">Not enough money!</div>
+<div id="app">
+    <div th:replace="parts/header :: header"></div>
+    <!--    <div class="alert" th:if="${param.error}">-->
+    <!--        <div class="alert alert-danger" role="alert" th:text="#{message.not.enough.money}">Not enough money!</div>-->
+    <!--    </div>-->
+    <div style="margin-bottom: 80px">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th th:text="#{var.good.name}"> Name</th>
+                <th th:text="#{var.price}"> Price</th>
+                <th th:text="#{var.amount}"> Amount</th>
+                <th th:text="#{var.discount}"> Discount</th>
+                <th th:text="#{var.discount.implemented}">Discount implemented</th>
+                <th th:text="#{var.cost}"> Cost</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in orderItems">
+                <td><span v-text="item.good.name"> Name </span></td>
+                <td><span v-text="item.good.localizedPrice"> Price </span></td>
+                <td>
+                    <input type="number" min="1" class="form-control" v-model="amount" :placeholder="item.amount"/>
+                    <button v-on:click="setAmount(item.good)" class="btn btn-outline-info"
+                            th:text="#{button.submit}"></button>
+                    <button v-on:click="deleteItem(item.good)" class="btn btn-outline-info"
+                            th:text="#{button.delete}"></button>
+                </td>
+                <td><span v-if="item.good.discount != null"
+                          v-text="item.good.discount.percent+'%'"> Discount </span>
+                </td>
+                <td><span v-text="item.useDiscount">Discount implemented</span></td>
+                <td><span v-if="item.useDiscount" v-text="item.localizedDiscountCost"> Cost </span>
+                    <span v-if="!item.useDiscount" v-text="item.localizedCost"> Cost </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><span v-text="sum"> Sum </span></td>
+            </tr>
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-info" style="position: absolute; right: 100px;" th:text="#{button.pay}"
+                v-on:click="pay"></button>
+        <br><br>
+        <span>*при покупке товаров, если товаров со скидками больше чем  3, то  в расчете суммы используются тольке те 3 скидки которые наиболее выгодны покупателю.</span>
+    </div>
+    <div th:replace="parts/footer :: footer"></div>
 </div>
-<div style="margin-bottom: 80px">
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th th:text="#{var.good.name}"> Name</th>
-            <th th:text="#{var.price}"> Price</th>
-            <th th:text="#{var.amount}"> Amount</th>
-            <th th:text="#{var.discount}"> Discount</th>
-            <th th:text="#{var.discount.implemented}">Discount implemented</th>
-            <th th:text="#{var.cost}"> Cost</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${order.items}">
-            <td><span th:text="${item.good.name}"> Name </span></td>
-            <td><span th:text="${item.good.localizedPrice}"> Price </span></td>
-            <td>
-                <form method="post" th:action="@{'/pay/' + ${item.good.getId()}}" style="float: left">
-                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                    <div class="form-group">
-                        <label for="amount"></label>
-                        <input required type="number" min="1" class="form-control" id="amount"
-                               th:placeholder="${item.amount}"
-                               name="amount" style="max-width: 100px; float: left;">
-                        <button type="submit" class="btn btn-outline-info" th:text="#{button.submit}">Submit</button>
-                    </div>
-                </form>
-                <form method="post" th:action="@{'/delete/' + ${item.good.getId()}}">
-                    <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-outline-info" th:text="#{button.delete}">Delete</button>
-                    </div>
-                </form>
-            </td>
-            <td><span th:if="${item.good.discount ne null}"
-                      th:text="${item.good.discount.percent}+'%'"> Discount </span>
-            </td>
-            <td><span th:text="#{|bool.${item.useDiscount}|}">Discount implemented</span></td>
-            <td><span th:if="${item.useDiscount}"
-                      th:text="${#numbers.formatDecimal(item.getLocalizedDiscountCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
-                <span th:if="${!item.useDiscount}"
-                      th:text="${#numbers.formatDecimal(item.getLocalizedCost(), 0, 'COMMA', 2, 'POINT')}"> Cost </span>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><span th:text="${#numbers.formatDecimal(sum, 0, 'COMMA', 2, 'POINT')}"> Sum </span></td>
-        </tr>
-        </tbody>
-    </table>
-
-    <form method="post" action="/paid">
-        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
-        <button type="submit" class="btn btn-info" style="position: absolute; right: 100px;" th:text="#{button.pay}">
-        </button>
-    </form>
-    <br><br>
-    <span>*при покупке товаров, если товаров со скидками больше чем  3, то  в расчете суммы используются тольке те 3 скидки которые наиболее выгодны покупателю.</span>
-</div>
-<div th:replace="parts/footer :: footer"></div>
+<script type="text/javascript" src="js/pay.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </body>
 </html>

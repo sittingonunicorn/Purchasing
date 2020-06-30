@@ -1,0 +1,45 @@
+window.onload = function () {
+    let app = new Vue({
+        el: '#app',
+        data: {
+            orderItems: [],
+            sum: '',
+            amount: '',
+            goodId:''
+        },
+        async mounted() {
+            await this.getItemsList();
+            await this.getSum();
+        },
+        methods: {
+            async getItemsList() {
+                let res = await axios.get('/items_list');
+                if (!res) return;
+                this.orderItems = res.data;
+            },
+            async getSum() {
+                let res = await axios.get('/sum');
+                if (!res) return;
+                this.sum = res.data;
+            },
+            async setAmount(good) {
+                await axios.post('/amount/' + this.amount, good);
+                await this.getItemsList();
+                await this.getSum();
+                location.reload();
+            },
+            async pay() {
+                await axios.post('/paid');
+                await this.getItemsList();
+                await this.getSum();
+                location.reload();
+            },
+            async deleteItem(good) {
+                await axios.post('/delete_item', good);
+                await this.getItemsList();
+                await this.getSum();
+                location.reload();
+            },
+        }
+    });
+}
