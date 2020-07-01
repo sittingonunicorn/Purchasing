@@ -30,10 +30,12 @@
                 <td><span v-text="item.good.name"> Name </span></td>
                 <td><span v-text="item.good.localizedPrice"> Price </span></td>
                 <td>
-                    <input type="number" min="1" class="form-control" v-model="amount" :placeholder="item.amount"
-                           style="max-width: 100px; float: left;"/>
+<!--                    <input type="number" min="1" class="form-control" v-model="amount" :placeholder="item.amount"-->
+<!--                           style="max-width: 100px; float: left;"/>-->
+                    <span v-text="item.amount+' '" style="float: left;"></span>
+                    <span style="color: white">__</span>
                     <button v-on:click="setAmount(item.good)" class="btn btn-outline-info"
-                            th:text="#{button.submit}"></button>
+                            th:text="#{button.change}"></button>
                     <button v-on:click="deleteItem(item.good)" class="btn btn-outline-info"
                             th:text="#{button.delete}"></button>
                 </td>

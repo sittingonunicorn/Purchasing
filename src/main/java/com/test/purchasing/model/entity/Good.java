@@ -1,9 +1,6 @@
 package com.test.purchasing.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.persistence.*;
@@ -16,6 +13,7 @@ import java.util.Locale;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode
 @Table(name = "good",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "good_id"})})
 public class Good {

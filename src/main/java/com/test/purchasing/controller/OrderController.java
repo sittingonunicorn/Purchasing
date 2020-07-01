@@ -20,16 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @SessionAttributes({"order"})
-public class OrderController{
+public class OrderController {
 
     private final GoodService goodService;
     private final OrderService orderService;
@@ -50,8 +47,11 @@ public class OrderController{
     }
 
     @GetMapping("/goods")
-    public List<Good> getGoodsList() {
-        return goodService.findAll();
+    public List<Good> getGoodsList(@ModelAttribute("order") CreateOrderDTO order) {
+//        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        return goodService.findAll().stream()
+                .filter(good -> getOrderGoodsList(order).stream()
+                        .noneMatch(g-> good.getId().equals(g.getId()))).collect(Collectors.toList());
     }
 
     @GetMapping("/order_goods")
@@ -61,10 +61,11 @@ public class OrderController{
     }
 
     @PostMapping("/list/add")
-    public void addGood(@RequestBody Good good, Model model) {
+    public List<Good> addGood(@RequestBody Good good, Model model) {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
         order.addGoodToOrder(good);
         log.info("Good with id: " + good.getId() + " is added to order");
+        return getGoodsList(order);
     }
 
     @GetMapping("/items_list")
@@ -78,7 +79,7 @@ public class OrderController{
     }
 
     @GetMapping("/equals")
-    public Boolean getGoodId(Good good, Good good2){
+    public Boolean getGoodId(Good good, Good good2) {
         System.out.println(good2.equals(good));
         return good2.equals(good);
     }
@@ -113,17 +114,23 @@ public class OrderController{
                                 LocaleContextHolder.getLocale())));
     }
 
-    @ExceptionHandler(NotEnoughMoneyException.class)
-    String handleNotEnoughMoneyException(NotEnoughMoneyException e, Model model) {
-        log.warn(e.getLocalizedMessage());
-        model.addAttribute("error", true);
-        return "redirect:/pay";
+//    @ExceptionHandler(NotEnoughMoneyException.class)
+//    String handleNotEnoughMoneyException(NotEnoughMoneyException e, Model model) {
+//        log.warn(e.getLocalizedMessage());
+//        model.addAttribute("error", true);
+//        return "redirect:/pay";
+//    }
+
+    @ExceptionHandler({NotEnoughMoneyException.class, GoodNotFoundException.class})
+    public final ResponseEntity<Map<String, String>> handleCustomExceptions(Exception ex) {
+        return ResponseEntity.badRequest().body(
+                Collections.singletonMap("error", ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(GoodNotFoundException.class)
-    String handleGoodNotFoundException(GoodNotFoundException e, Model model) {
-        log.warn(e.getLocalizedMessage());
-        model.addAttribute("error", true);
-        return "redirect:/list";
-    }
+//    @ExceptionHandler(GoodNotFoundException.class)
+//    String handleGoodNotFoundException(GoodNotFoundException e, Model model) {
+//        log.warn(e.getLocalizedMessage());
+//        model.addAttribute("error", true);
+//        return "redirect:/list";
+//    }
 }

@@ -30,6 +30,7 @@ window.onload = function () {
                 this.sum = res.data;
             },
             async setAmount(good) {
+                this.amount = prompt('Input amount', 1);
                 await axios.post('/amount/' + this.amount, good);
                 await this.getItemsList();
                 await this.getSum();
@@ -39,6 +40,8 @@ window.onload = function () {
                 await axios.post('/paid')
                     .then((response) => {
                         alert(response.data.message);
+                    }).catch((error) => {
+                        alert(error.response.data.error);
                     });
                 await this.getItemsList();
                 await this.getSum();

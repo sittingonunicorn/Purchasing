@@ -28,9 +28,10 @@ window.onload = function () {
                 this.orderGoods = res.data;
             },
             async addGood(good) {
-                await axios.post('/list/add', good);
-                await this.getGoodsList();
-                await this.getOrderGoodsList();
+                await axios.post('/list/add', good)
+                    .then(response => {
+                        this.goods = response.data;
+                    });
             },
             async equals(listGood, good) {
                 return await axios.get('/equals', good, listGood);
