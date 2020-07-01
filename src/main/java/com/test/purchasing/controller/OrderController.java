@@ -48,7 +48,6 @@ public class OrderController {
 
     @GetMapping("/goods")
     public List<Good> getGoodsList(@ModelAttribute("order") CreateOrderDTO order) {
-//        CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
         return goodService.findAll().stream()
                 .filter(good -> getOrderGoodsList(order).stream()
                         .noneMatch(g-> good.getId().equals(g.getId()))).collect(Collectors.toList());
@@ -78,27 +77,24 @@ public class OrderController {
         return order.getSum();
     }
 
-    @GetMapping("/equals")
-    public Boolean getGoodId(Good good, Good good2) {
-        System.out.println(good2.equals(good));
-        return good2.equals(good);
-    }
-
     @PostMapping("/amount/{amount}")
     public void setAmount(@RequestBody Good good, @PathVariable Integer amount, Model model) {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        assert order != null;
         order.changeAmount(good, amount);
     }
 
     @PostMapping("/delete_item")
     public void deleteGood(@RequestBody Good good, Model model) {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
+        assert order != null;
         order.deleteOrderItem(good);
     }
 
     @PostMapping("/paid")
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<Map<String, String>> orderPayment(Model model, SessionStatus sessionStatus) throws NotEnoughMoneyException {
+    public ResponseEntity<Map<String, String>> orderPayment(Model model, SessionStatus sessionStatus)
+            throws NotEnoughMoneyException {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
         BigDecimal balance = order.getUser().getLocalizedBalance();
         BigDecimal sum = order.getSum();
@@ -114,23 +110,9 @@ public class OrderController {
                                 LocaleContextHolder.getLocale())));
     }
 
-//    @ExceptionHandler(NotEnoughMoneyException.class)
-//    String handleNotEnoughMoneyException(NotEnoughMoneyException e, Model model) {
-//        log.warn(e.getLocalizedMessage());
-//        model.addAttribute("error", true);
-//        return "redirect:/pay";
-//    }
-
     @ExceptionHandler({NotEnoughMoneyException.class, GoodNotFoundException.class})
     public final ResponseEntity<Map<String, String>> handleCustomExceptions(Exception ex) {
         return ResponseEntity.badRequest().body(
                 Collections.singletonMap("error", ex.getLocalizedMessage()));
     }
-
-//    @ExceptionHandler(GoodNotFoundException.class)
-//    String handleGoodNotFoundException(GoodNotFoundException e, Model model) {
-//        log.warn(e.getLocalizedMessage());
-//        model.addAttribute("error", true);
-//        return "redirect:/list";
-//    }
 }

@@ -33,9 +33,6 @@ window.onload = function () {
                         this.goods = response.data;
                     });
             },
-            async equals(listGood, good) {
-                return await axios.get('/equals', good, listGood);
-            },
         }
     });
 };

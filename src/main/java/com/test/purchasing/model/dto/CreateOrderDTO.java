@@ -50,6 +50,7 @@ public class CreateOrderDTO {
         if (items.stream().map(OrderItem::getGood).noneMatch(g -> g.equals(good))) {
             items.add(OrderItem.builder().good(good).amount(1).useDiscount(true).build());
         }
+        setOptionalDiscount();
     }
 
     public void deleteOrderItem(Good good) {
