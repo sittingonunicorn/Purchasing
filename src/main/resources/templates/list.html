@@ -10,6 +10,9 @@
     <div class="alert" th:if="${param.error}">
         <div class="alert alert-danger" role="alert" th:text="#{message.good.not.found}">Not enough money!</div>
     </div>
+    <div th:text="#{message.balance}" style="float: left;"></div>
+    <span v-text="balance" style="float: left;"></span>
+    <div th:text="#{message.currency}"></div>
     <table class="table table-hover">
         <thead>
         <tr>

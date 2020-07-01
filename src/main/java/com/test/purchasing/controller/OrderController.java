@@ -10,6 +10,9 @@ import com.test.purchasing.model.service.GoodService;
 import com.test.purchasing.model.service.OrderService;
 import com.test.purchasing.model.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -18,22 +21,27 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @SessionAttributes({"order"})
-public class OrderController {
+public class OrderController{
 
     private final GoodService goodService;
     private final OrderService orderService;
     private final UserService userService;
+    private final MessageSource messageSource;
 
-    public OrderController(GoodService goodService, OrderService orderService, UserService userService) {
+    public OrderController(GoodService goodService, OrderService orderService, UserService userService,
+                           MessageSource messageSource) {
         this.goodService = goodService;
         this.orderService = orderService;
         this.userService = userService;
+        this.messageSource = messageSource;
     }
 
     @ModelAttribute("order")
@@ -69,6 +77,12 @@ public class OrderController {
         return order.getSum();
     }
 
+    @GetMapping("/equals")
+    public Boolean getGoodId(Good good, Good good2){
+        System.out.println(good2.equals(good));
+        return good2.equals(good);
+    }
+
     @PostMapping("/amount/{amount}")
     public void setAmount(@RequestBody Good good, @PathVariable Integer amount, Model model) {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
@@ -83,7 +97,7 @@ public class OrderController {
 
     @PostMapping("/paid")
     @Transactional(rollbackFor = Exception.class)
-    public void orderPayment(Model model, SessionStatus sessionStatus) throws NotEnoughMoneyException {
+    public ResponseEntity<Map<String, String>> orderPayment(Model model, SessionStatus sessionStatus) throws NotEnoughMoneyException {
         CreateOrderDTO order = (CreateOrderDTO) model.getAttribute("order");
         BigDecimal balance = order.getUser().getLocalizedBalance();
         BigDecimal sum = order.getSum();
@@ -93,6 +107,10 @@ public class OrderController {
         orderService.saveOrder(order);
         userService.subtractBalance(order.getUser(), sum);
         sessionStatus.setComplete();
+        return ResponseEntity.ok().body(
+                Collections.singletonMap("message",
+                        messageSource.getMessage("message.order.paid", null,
+                                LocaleContextHolder.getLocale())));
     }
 
     @ExceptionHandler(NotEnoughMoneyException.class)

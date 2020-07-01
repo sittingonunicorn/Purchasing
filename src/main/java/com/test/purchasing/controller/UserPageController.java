@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -60,6 +61,11 @@ public class UserPageController {
         return "create_user.html";
     }
 
+    @GetMapping("/get_user")
+    public @ResponseBody String getUser(@AuthenticationPrincipal User user) {
+        return user.getName();
+    }
+
     @PostMapping("/create_user")
     public String addUser(@Valid @ModelAttribute UserRegistrationDTO userRegistrationDTO, Model model,
                           Locale locale) {
@@ -83,7 +89,7 @@ public class UserPageController {
     @GetMapping("/balance")
     public @ResponseBody
     BigDecimal getBalance(@AuthenticationPrincipal User user) {
-        return user.getLocalizedBalance();
+        return user.getLocalizedBalance().setScale(2, RoundingMode.HALF_EVEN);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

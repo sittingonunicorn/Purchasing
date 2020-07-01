@@ -8,6 +8,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 
 @Data
@@ -46,31 +47,34 @@ public class OrderItem {
     public BigDecimal getLocalizedCost() {
         Locale locale = LocaleContextHolder.getLocale();
         BigDecimal itemPrice = good.getPrice().multiply(BigDecimal.valueOf(amount));
-        return locale.equals(Locale.US) ? itemPrice : itemPrice.multiply(BigDecimal.valueOf(26.7));
+        return locale.equals(Locale.US) ? itemPrice.setScale(2, RoundingMode.HALF_EVEN)
+                : itemPrice.multiply(BigDecimal.valueOf(26.7)).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal getLocalizedDiscountCost() {
         Locale locale = LocaleContextHolder.getLocale();
         BigDecimal discountPrice =  useDiscount ? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount))
                 : getCost();
-        return locale.equals(Locale.US) ? discountPrice : discountPrice.multiply(BigDecimal.valueOf(26.7));
+        return locale.equals(Locale.US) ? discountPrice.setScale(2, RoundingMode.HALF_EVEN)
+                : discountPrice.multiply(BigDecimal.valueOf(26.7)).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     private BigDecimal getCost(){
-        return good.getPrice().multiply(BigDecimal.valueOf(amount));
+        return good.getPrice().multiply(BigDecimal.valueOf(amount)).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public BigDecimal getDiscountCost(){
-        return useDiscount? good.getDiscountPrice().multiply(BigDecimal.valueOf(amount)) : getCost();
+        return useDiscount? good.getDiscountPrice()
+                .multiply(BigDecimal.valueOf(amount)).setScale(2, RoundingMode.HALF_EVEN) : getCost();
     }
 
     public BigDecimal getDiscountValue() {
         return useDiscount ? good.getPrice().subtract(good.getDiscountPrice())
-                .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
+                .multiply(new BigDecimal(amount)).setScale(2, RoundingMode.HALF_EVEN) : BigDecimal.valueOf(0);
     }
 
     public BigDecimal getPossibleDiscount() {
         return good.getDiscount() != null ? good.getPrice().subtract(good.getDiscountPrice())
-                .multiply(new BigDecimal(amount)) : BigDecimal.valueOf(0);
+                .multiply(new BigDecimal(amount)).setScale(2, RoundingMode.HALF_EVEN) : BigDecimal.valueOf(0);
     }
 }

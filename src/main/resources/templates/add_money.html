@@ -12,8 +12,11 @@
             Your balance
         </div>
     </div>
-    <div th:text="#{message.replenised.balance.user(${name})}"></div>
-    <span v-text="sum"></span>
+    <div th:text="#{message.replenised.balance.user}" style="float: left;"></div>
+    <span v-text="userName"></span><br>
+    <div th:text="#{message.balance}" style="float: left;"></div>
+    <span v-text="balance" style="float: left;"></span>
+    <div th:text="#{message.currency}"></div>
     <input type="number" min="1" class="form-control" v-model="sum" th:placeholder="#{message.input.sum}"/>
     <button type=submit v-on:click="replenishBalance()" class="btn btn-outline-info"
             th:text="#{button.submit}"></button>
